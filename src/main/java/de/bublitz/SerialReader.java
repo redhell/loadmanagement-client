@@ -1,4 +1,4 @@
-package Serial;
+package de.bublitz;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
@@ -9,7 +9,6 @@ import lombok.extern.log4j.Log4j2;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Log4j2
