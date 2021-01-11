@@ -20,24 +20,26 @@ import java.util.Map;
 public class TransferService {
     @Autowired
     private SerialReader serialReader;
-
-    @Autowired
-    private ConfigProperties configProperties;
-
+    private final ConfigProperties configProperties;
 
     private final RestTemplate restTemplate;
 
-    public TransferService(RestTemplateBuilder restTemplateBuilder) {
+    public TransferService(ConfigProperties configProperties) {
+        RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
         this.restTemplate = restTemplateBuilder.build();
-        //registerChargebox(configProperties.getName(), configProperties.getEvseid(), "testURL", "stopURL");
+        this.configProperties = configProperties;
+        registerChargebox(configProperties.getName(), configProperties.getEvseid(), configProperties.getStarturl(),configProperties.getStopurl());
+
     }
 
-    @Scheduled(fixedDelay = 10000, initialDelay = 10000)
+    @Scheduled(fixedDelay = 15000, initialDelay = 10000)
     public void sendData() {
         log.info(serialReader.getDataMap().size());
         String url = "/load/"+ configProperties.getName() + "/rawPoints";
         HttpEntity<Map<LocalDateTime, String>> entity = new HttpEntity<>(serialReader.getDataMap(), new HttpHeaders());
         ResponseEntity<Boolean> response = restTemplate.postForEntity("http://localhost:8080" + url, entity, Boolean.class);
+
+        serialReader.getDataMap().clear();
     }
 
     public void registerChargebox(String name, String evseid, String startURL, String stopURL) {

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PreDestroy;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Map;
@@ -49,11 +50,15 @@ public class SerialReader {
         });
     }
 
+    @PreDestroy
     public void removeListener() {
         comPort.removeDataListener();
+        comPort.closePort();
+        log.warn("Shutdown Serial Port");
     }
 
     private synchronized void collectRawData(String rawData) {
+        rawData = rawData.replaceAll("\\R+", "");
         if(rawData.contains("{")) {
             if(currentString!=null) {
                  Arrays.stream(currentString.split(";"))
