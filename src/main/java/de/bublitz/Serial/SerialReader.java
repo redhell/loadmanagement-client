@@ -1,26 +1,38 @@
-package de.bublitz;
+package de.bublitz.Serial;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 @Log4j2
+@Component
 public class SerialReader {
+
     @Getter
-    private List<String> dataList = new LinkedList<>();
-    private String currentString ="";
+    private Map<LocalDateTime, String> dataMap;
+    private String currentString = "";
+    private SerialPort comPort;
 
+    public SerialReader() {
+        comPort = SerialPort.getCommPort("/dev/cu.usbmodem142401");
+        this.addListener();
+        dataMap = new ConcurrentSkipListMap<>();
+    }
 
-    public void readSerial() {
+    public void setComPort(String comPort) {
+        this.comPort = SerialPort.getCommPort(comPort);
+    }
+
+    public void addListener() {
         //SerialPort comPort = SerialPort.getCommPorts()[0];
-        SerialPort comPort = SerialPort.getCommPort("/dev/cu.usbmodem142401");
         comPort.openPort();
         comPort.addDataListener(new SerialPortDataListener() {
             @Override
@@ -37,14 +49,21 @@ public class SerialReader {
         });
     }
 
+    public void removeListener() {
+        comPort.removeDataListener();
+    }
+
     private synchronized void collectRawData(String rawData) {
         if(rawData.contains("{")) {
             if(currentString!=null) {
-                dataList.addAll(Arrays.stream(currentString.split(";")).collect(Collectors.toList()));
-                log.info(dataList.get(dataList.size()-1));
+                 Arrays.stream(currentString.split(";"))
+                        .filter(data -> data.matches("^\\{\"I\":\"\\d+\\.\\d+\",\"unit\":\"A\"};?"))
+                        .forEach(data -> {
+                            dataMap.put(LocalDateTime.now(), data);
+                            log.info(data);
+                        });
+                currentString = currentString.substring(currentString.lastIndexOf(";")+1) + rawData;
             }
-            //neuer Datensatz
-            currentString = currentString.substring(currentString.lastIndexOf(";")+1) + rawData;
         } else {
             currentString += rawData;
         }
