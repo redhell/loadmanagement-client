@@ -1,5 +1,6 @@
 package de.bublitz.Components;
 
+import de.bublitz.Config.ConfigProperties;
 import de.bublitz.Serial.SerialReader;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,20 +20,22 @@ import java.util.Map;
 public class TransferService {
     @Autowired
     private SerialReader serialReader;
-    private String name;
+
+    @Autowired
+    private ConfigProperties configProperties;
+
 
     private final RestTemplate restTemplate;
 
     public TransferService(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
-        this.name = "testName";
-        registerChargebox(name, "test-1", "testURL", "stopURL");
+        //registerChargebox(configProperties.getName(), configProperties.getEvseid(), "testURL", "stopURL");
     }
 
     @Scheduled(fixedDelay = 10000, initialDelay = 10000)
     public void sendData() {
         log.info(serialReader.getDataMap().size());
-        String url = "/load/"+ name + "/rawPoints";
+        String url = "/load/"+ configProperties.getName() + "/rawPoints";
         HttpEntity<Map<LocalDateTime, String>> entity = new HttpEntity<>(serialReader.getDataMap(), new HttpHeaders());
         ResponseEntity<Boolean> response = restTemplate.postForEntity("http://localhost:8080" + url, entity, Boolean.class);
     }
