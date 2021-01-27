@@ -1,6 +1,6 @@
 package de.bublitz.Components;
 
-import de.bublitz.Config.ConfigProperties;
+import de.bublitz.Config.ChargeboxConfig;
 import de.bublitz.Serial.SerialReader;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,24 +18,25 @@ import java.util.Map;
 @Service
 @Log4j2
 public class TransferService {
+
     @Autowired
     private SerialReader serialReader;
-    private final ConfigProperties configProperties;
+    private final ChargeboxConfig chargeboxConfig;
 
     private final RestTemplate restTemplate;
 
-    public TransferService(ConfigProperties configProperties) {
+    public TransferService(ChargeboxConfig chargeboxConfig) {
         RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
         this.restTemplate = restTemplateBuilder.build();
-        this.configProperties = configProperties;
-        registerChargebox(configProperties.getName(), configProperties.getEvseid(), configProperties.getStarturl(),configProperties.getStopurl());
+        this.chargeboxConfig = chargeboxConfig;
+        registerChargebox(chargeboxConfig.getName(), chargeboxConfig.getEvseid(), chargeboxConfig.getStarturl(), chargeboxConfig.getStopurl());
 
     }
 
     @Scheduled(fixedDelay = 15000, initialDelay = 10000)
     public void sendData() {
         log.info(serialReader.getDataMap().size());
-        String url = "/load/"+ configProperties.getName() + "/rawPoints";
+        String url = "/load/"+ chargeboxConfig.getName() + "/rawPoints";
         HttpEntity<Map<LocalDateTime, String>> entity = new HttpEntity<>(serialReader.getDataMap(), new HttpHeaders());
         ResponseEntity<Boolean> response = restTemplate.postForEntity("http://localhost:8080" + url, entity, Boolean.class);
 

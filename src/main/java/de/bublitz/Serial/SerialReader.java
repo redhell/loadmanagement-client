@@ -3,10 +3,13 @@ package de.bublitz.Serial;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
+import de.bublitz.Config.SerialConfig;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -17,15 +20,22 @@ import java.util.concurrent.ConcurrentSkipListMap;
 @Component
 public class SerialReader {
 
+    @Autowired
+    private SerialConfig serialConfig;
+
     @Getter
     private Map<LocalDateTime, String> dataMap;
     private String currentString = "";
     private SerialPort comPort;
 
     public SerialReader() {
-        comPort = SerialPort.getCommPort("/dev/cu.usbmodem142401");
-        this.addListener();
         dataMap = new ConcurrentSkipListMap<>();
+    }
+
+    @PostConstruct
+    public void setUp() {
+        comPort = SerialPort.getCommPort(serialConfig.getPort());
+        this.addListener();
     }
 
     public void setComPort(String comPort) {
