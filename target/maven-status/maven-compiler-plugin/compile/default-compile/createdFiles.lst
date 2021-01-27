@@ -1,0 +1,9 @@
+de/bublitz/Config/SerialConfig.class
+META-INF/spring-configuration-metadata.json
+de/bublitz/LoadmanagementClient.class
+de/bublitz/Config/ChargeboxConfig.class
+de/bublitz/Serial/SerialReader.class
+de/bublitz/Config/BalancerConfig.class
+de/bublitz/Serial/SerialReader$1.class
+de/bublitz/Controller/WebController.class
+de/bublitz/Components/TransferService.class

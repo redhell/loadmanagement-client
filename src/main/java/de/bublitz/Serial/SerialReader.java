@@ -24,7 +24,7 @@ public class SerialReader {
     private SerialConfig serialConfig;
 
     @Getter
-    private Map<LocalDateTime, String> dataMap;
+    private final Map<LocalDateTime, String> dataMap;
     private String currentString = "";
     private SerialPort comPort;
 

@@ -1,4 +1,7 @@
-/Users/dominic/IdeaProjects/loadmanagement-client/src/main/java/de/bublitz/Config/ConfigProperties.java
+/Users/dominic/IdeaProjects/loadmanagement-client/src/main/java/de/bublitz/Config/SerialConfig.java
+/Users/dominic/IdeaProjects/loadmanagement-client/src/main/java/de/bublitz/Config/ChargeboxConfig.java
 /Users/dominic/IdeaProjects/loadmanagement-client/src/main/java/de/bublitz/LoadmanagementClient.java
+/Users/dominic/IdeaProjects/loadmanagement-client/src/main/java/de/bublitz/Controller/WebController.java
 /Users/dominic/IdeaProjects/loadmanagement-client/src/main/java/de/bublitz/Components/TransferService.java
 /Users/dominic/IdeaProjects/loadmanagement-client/src/main/java/de/bublitz/Serial/SerialReader.java
+/Users/dominic/IdeaProjects/loadmanagement-client/src/main/java/de/bublitz/Config/BalancerConfig.java

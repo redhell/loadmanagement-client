@@ -1,5 +1,6 @@
 package de.bublitz.Components;
 
+import de.bublitz.Config.BalancerConfig;
 import de.bublitz.Config.ChargeboxConfig;
 import de.bublitz.Serial.SerialReader;
 import lombok.extern.log4j.Log4j2;
@@ -12,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -22,15 +24,22 @@ public class TransferService {
     @Autowired
     private SerialReader serialReader;
     private final ChargeboxConfig chargeboxConfig;
+    private final String host;
+    private RestTemplate restTemplate;
 
-    private final RestTemplate restTemplate;
+    private final BalancerConfig balancerConfig;
 
-    public TransferService(ChargeboxConfig chargeboxConfig) {
+    public TransferService(ChargeboxConfig chargeboxConfig, BalancerConfig balancerConfig) {
+        this.chargeboxConfig = chargeboxConfig;
+        this.balancerConfig = balancerConfig;
+        host = "http://" + balancerConfig.getIp() + ":" + balancerConfig.getPort();
+    }
+
+    @PostConstruct
+    public void setUp() {
         RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
         this.restTemplate = restTemplateBuilder.build();
-        this.chargeboxConfig = chargeboxConfig;
         registerChargebox(chargeboxConfig.getName(), chargeboxConfig.getEvseid(), chargeboxConfig.getStarturl(), chargeboxConfig.getStopurl());
-
     }
 
     @Scheduled(fixedDelay = 15000, initialDelay = 10000)
@@ -38,14 +47,14 @@ public class TransferService {
         log.info(serialReader.getDataMap().size());
         String url = "/load/"+ chargeboxConfig.getName() + "/rawPoints";
         HttpEntity<Map<LocalDateTime, String>> entity = new HttpEntity<>(serialReader.getDataMap(), new HttpHeaders());
-        ResponseEntity<Boolean> response = restTemplate.postForEntity("http://localhost:8080" + url, entity, Boolean.class);
+        ResponseEntity<Boolean> response = restTemplate.postForEntity(host + url, entity, Boolean.class);
 
         serialReader.getDataMap().clear();
     }
 
     public void registerChargebox(String name, String evseid, String startURL, String stopURL) {
         String url = "/chargebox/add?name={name}&evseid={evseid}&startURL={startURL}&stopURL={stopURL}";
-        ResponseEntity<Boolean> response = restTemplate.getForEntity("http://localhost:8080" + url, Boolean.class, name, evseid, startURL, stopURL);
+        ResponseEntity<Boolean> response = restTemplate.getForEntity(host + url, Boolean.class, name, evseid, startURL, stopURL);
         log.info(response.getStatusCode());
     }
 }
