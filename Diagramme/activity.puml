@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+!include skin.pu
+start
+:Initialisiere Bean;
+:setUp();
+:addListener();
+repeat
+repeat :Warte auf SerialEvent;
+repeatwhile (SerialEvent\n empfangen?) -> nein
+-> ja;
+:Lese Daten ein;
+:collectRawData();
+:Parse Daten und speichere in dataMap;
+repeatwhile(Beenden?) -> nein
+-> ja;
+:removeListener();
+stop
+@enduml
