@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -49,8 +50,11 @@ public class TransferService {
         String url = "/load/" + chargeboxConfig.getName() + "/rawPoints";
         HttpEntity<Map<LocalDateTime, String>> entity = new HttpEntity<>(serialReader.getDataMap(), new HttpHeaders());
         ResponseEntity<Boolean> response = restTemplate.postForEntity(host + url, entity, Boolean.class);
-
-        serialReader.getDataMap().clear();
+        if (response.getStatusCode() == HttpStatus.OK) {
+            serialReader.getDataMap().clear();
+        } else {
+            log.warn("Fehler beim senden!");
+        }
     }
 
     public void registerChargebox(String name, String evseid, String startURL, String stopURL, String emaid) {
