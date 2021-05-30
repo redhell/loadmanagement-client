@@ -14,5 +14,5 @@ public class ChargeboxConfig {
     private String evseid;
     private String starturl;
     private String stopurl;
-    private String tag;
+    private String emaid;
 }
