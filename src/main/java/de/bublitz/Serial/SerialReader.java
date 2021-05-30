@@ -54,7 +54,8 @@ public class SerialReader {
                 StringBuilder rawData = new StringBuilder();
                 byte[] newData = event.getReceivedData();
                 log.debug("Received data of size: " + newData.length);
-                for (byte newDatum : newData) rawData.append((char) newDatum);
+                for (byte newDatum : newData)
+                    rawData.append((char) newDatum);
                 collectRawData(rawData.toString());
             }
         });
