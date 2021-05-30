@@ -29,6 +29,7 @@ public class TransferService {
 
     private final BalancerConfig balancerConfig;
 
+    @Autowired
     public TransferService(ChargeboxConfig chargeboxConfig, BalancerConfig balancerConfig) {
         this.chargeboxConfig = chargeboxConfig;
         this.balancerConfig = balancerConfig;
