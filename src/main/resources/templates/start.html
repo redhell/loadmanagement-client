@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Balancer Client</title>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+          integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h1>Ladebox</h1>
+    <form method="post" th:action="@{/updateCB}" th:object="${chargebox}">
+        <div class="row p-1">
+            <div class="col-2"><input class="btn btn-primary" th:type="submit"/></div>
+            <div class="col-2"><input class="btn btn-danger" th:type="reset"/></div>
+        </div>
+        <div class="row">
+            <table class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">Attribut</th>
+                    <th scope="col">Wert</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Name</td>
+                    <td><input class="form-control" required th:field="*{name}" th:type="text"/></td>
+                </tr>
+                <tr>
+                    <td>EVSEID</td>
+                    <td><input class="form-control" required th:field="*{evseid}" th:type="text"/></td>
+                </tr>
+                <tr>
+                    <td>EMAID</td>
+                    <td><input class="form-control" required th:field="*{emaid}" th:type="text"/></td>
+                </tr>
+                <tr>
+                    <td>Start URL</td>
+                    <td><input class="form-control" required th:field="*{starturl}" th:type="text"/></td>
+                </tr>
+                <tr>
+                    <td>Stop URL</td>
+                    <td><input class="form-control" required th:field="*{stopurl}" th:type="text"/></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </form>
+</div>
+</body>
+</html>
