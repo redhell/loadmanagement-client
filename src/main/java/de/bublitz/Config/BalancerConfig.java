@@ -12,4 +12,5 @@ import org.springframework.context.annotation.PropertySource;
 public class BalancerConfig {
     private String ip;
     private int port;
+    private String type;
 }

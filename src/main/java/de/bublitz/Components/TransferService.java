@@ -41,13 +41,17 @@ public class TransferService {
     public void setUp() {
         RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
         this.restTemplate = restTemplateBuilder.build();
-        registerChargebox(chargeboxConfig.getName(), chargeboxConfig.getEvseid(), chargeboxConfig.getStarturl(), chargeboxConfig.getStopurl(), chargeboxConfig.getEmaid());
+        if (balancerConfig.getType().equals("chargebox")) {
+            registerChargebox(chargeboxConfig.getName(), chargeboxConfig.getEvseid(), chargeboxConfig.getStarturl(), chargeboxConfig.getStopurl(), chargeboxConfig.getEmaid());
+        } else {
+            registerConsumer(chargeboxConfig.getName());
+        }
     }
 
     @Scheduled(fixedDelay = 15000, initialDelay = 10000)
     public void sendData() {
         log.info(serialReader.getDataMap().size());
-        String url = "/load/" + chargeboxConfig.getName() + "/rawPoints";
+        String url = "/load/" + balancerConfig.getType() + "/" + chargeboxConfig.getName() + "/rawPoints";
         HttpEntity<Map<LocalDateTime, String>> entity = new HttpEntity<>(serialReader.getDataMap(), new HttpHeaders());
         ResponseEntity<Boolean> response = restTemplate.postForEntity(host + url, entity, Boolean.class);
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -60,6 +64,12 @@ public class TransferService {
     public void registerChargebox(String name, String evseid, String startURL, String stopURL, String emaid) {
         String url = "/chargebox/add?name={name}&evseid={evseid}&startURL={startURL}&stopURL={stopURL}&emaid={emaid}";
         ResponseEntity<Boolean> response = restTemplate.getForEntity(host + url, Boolean.class, name, evseid, startURL, stopURL, emaid);
+        log.info(response.getStatusCode());
+    }
+
+    public void registerConsumer(String name) {
+        String url = "/consumers/add?name={name}";
+        ResponseEntity<Boolean> response = restTemplate.getForEntity(host + url, Boolean.class, name);
         log.info(response.getStatusCode());
     }
 }
